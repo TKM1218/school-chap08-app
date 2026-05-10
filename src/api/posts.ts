@@ -31,45 +31,57 @@ type ContactResponse = {
   data: ContactPayload;
 };
 
-const fetchApi = async <T>(path: string, errorMessage: string): Promise<T> => {
-  const response = await fetch(`${API_BASE_URL}${path}`);
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
+
+const request = async <ResponseType, RequestType = undefined>(
+  path: string,
+  method: HttpMethod,
+  body?: RequestType,
+): Promise<ResponseType> => {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method,
+    headers: body ? { "Content-Type": "application/json" } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+    cache: method === "GET" ? "default" : "no-store",
+  });
 
   if (!response.ok) {
-    throw new Error(errorMessage);
+    throw new Error("APIリクエストに失敗しました");
   }
 
-  return response.json() as Promise<T>;
+  return response.json() as Promise<ResponseType>;
+};
+
+const api = {
+  get: <ResponseType>(path: string) => {
+    return request<ResponseType>(path, "GET");
+  },
+
+  post: <ResponseType, RequestType>(path: string, body: RequestType) => {
+    return request<ResponseType, RequestType>(path, "POST", body);
+  },
+
+  put: <ResponseType, RequestType>(path: string, body: RequestType) => {
+    return request<ResponseType, RequestType>(path, "PUT", body);
+  },
+
+  delete: <ResponseType>(path: string) => {
+    return request<ResponseType>(path, "DELETE");
+  },
 };
 
 export const fetchPosts = async (): Promise<Post[]> => {
-  const data = await fetchApi<PostsResponse>(
-    "/posts",
-    "記事一覧の取得に失敗しました",
-  );
+  const data = await api.get<PostsResponse>("/posts");
   return data.posts;
 };
 
 export const fetchPostById = async (id: number): Promise<Post> => {
-  const data = await fetchApi<PostResponse>(
-    `/posts/${id}`,
-    "記事詳細の取得に失敗しました",
-  );
+  const data = await api.get<PostResponse>(`/posts/${id}`);
   return data.post;
 };
 
 export const sendContact = async (
   payload: ContactPayload,
 ): Promise<ContactResponse> => {
-  const response = await fetch(`${API_BASE_URL}/contacts`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    throw new Error("送信に失敗しました");
-  }
-
-  return response.json() as Promise<ContactResponse>;
+  return api.post<ContactResponse, ContactPayload>("/contacts", payload);
 };
