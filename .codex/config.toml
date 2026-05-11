@@ -1,0 +1,26 @@
+# 回答スタイル
+[assistant]
+verbosity = "concise"
+
+# ファイル操作ポリシー
+[file_policy]
+allow_create = false
+allow_delete = false
+allow_rename = false
+
+# コード変更ポリシー
+[editing]
+require_confirmation = true
+
+# シェル実行ポリシー
+[shell]
+allow_destructive_commands = false
+
+# 指示
+instructions = """
+- 回答は簡潔にしてください
+- ファイルやディレクトリを勝手に作成しないでください
+- ファイルやディレクトリを勝手に削除しないでください
+- 変更前に実施内容を説明してください
+- 必要最小限の変更のみ行ってください
+"""
