@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { fetchPosts, type Post } from "@/src/api/posts";
+import { fetchPosts } from "@/src/api/posts";
+import { type Post } from "@/src/app/_types/Post";
 import Image from "next/image";
 
 const formatDate = (iso: string) => {
@@ -68,7 +69,7 @@ export default function PostIndex() {
               <article className="flex flex-col gap-6 border-b border-gray-200 pb-8 last:border-b-0 md:flex-row">
                 <div className="w-full shrink-0 md:w-[280px]">
                   <Image
-                    src={post.thumbnailUrl}
+                    src={post.thumbnailUrl.url}
                     alt=""
                     width={800}
                     height={400}
@@ -85,10 +86,10 @@ export default function PostIndex() {
                     <div className="flex gap-2">
                       {post.categories.map((category) => (
                         <span
-                          key={category}
+                          key={category.id}
                           className="rounded-full bg-gray-200 px-3 py-1 text-xs font-medium text-gray-700"
                         >
-                          {category}
+                          {category.name}
                         </span>
                       ))}
                     </div>

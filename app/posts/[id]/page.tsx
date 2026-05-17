@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { fetchPostById, type Post } from "@/src/api/posts";
+import { fetchPostById } from "@/src/api/posts";
+import { Post } from "@/src/app/_types/Post";
 import Image from "next/image";
 
 const formatDate = (iso: string) => {
@@ -31,7 +32,7 @@ export default function PostShow() {
         setIsLoading(true);
         setError("");
 
-        const data = await fetchPostById(Number(id));
+        const data = await fetchPostById(id);
 
         if (!ignore) setPost(data);
       } catch (e) {
@@ -66,7 +67,7 @@ export default function PostShow() {
     <main className="mx-auto max-w-4xl px-4 py-10 text-gray-800">
       <article>
         <Image
-          src={post.thumbnailUrl}
+          src={post.thumbnailUrl.url}
           alt={post.title}
           width={800}
           height={400}
@@ -81,10 +82,10 @@ export default function PostShow() {
           <div className="flex gap-2">
             {post.categories.map((category) => (
               <span
-                key={category}
+                key={category.id}
                 className="rounded-full bg-gray-200 px-3 py-1 text-xs font-medium text-gray-700"
               >
-                {category}
+                {category.name}
               </span>
             ))}
           </div>

@@ -1,24 +1,6 @@
-const API_BASE_URL =
-  "https://1hmfpsvto6.execute-api.ap-northeast-1.amazonaws.com/dev";
+import { type Post, type PostsResponse } from "@/src/app/_types/Post";
 
-export type Post = {
-  id: number;
-  title: string;
-  thumbnailUrl: string;
-  createdAt: string;
-  categories: string[];
-  content: string;
-};
-
-type PostsResponse = {
-  message: string;
-  posts: Post[];
-};
-
-type PostResponse = {
-  message: string;
-  post: Post;
-};
+const API_BASE_URL = "https://y8mog4131k.microcms.io/api/v1";
 
 export type ContactPayload = {
   name: string;
@@ -40,7 +22,10 @@ const request = async <ResponseType, RequestType = undefined>(
 ): Promise<ResponseType> => {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method,
-    headers: body ? { "Content-Type": "application/json" } : undefined,
+    headers: {
+      ...(body ? { "Content-Type": "application/json" } : {}),
+      "X-MICROCMS-API-KEY": process.env.NEXT_PUBLIC_MICROCMS_API_KEY as string,
+    },
     body: body ? JSON.stringify(body) : undefined,
     cache: method === "GET" ? "default" : "no-store",
   });
@@ -72,12 +57,13 @@ const api = {
 
 export const fetchPosts = async (): Promise<Post[]> => {
   const data = await api.get<PostsResponse>("/posts");
-  return data.posts;
+  return data.contents;
 };
 
-export const fetchPostById = async (id: number): Promise<Post> => {
-  const data = await api.get<PostResponse>(`/posts/${id}`);
-  return data.post;
+export const fetchPostById = async (id: string): Promise<Post> => {
+  // const data = await api.get<PostResponse>(`/posts/${id}`);
+  // return data.post;
+  return api.get<Post>(`/posts/${id}`);
 };
 
 export const sendContact = async (
