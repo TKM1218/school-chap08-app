@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { sendContact, type ContactPayload } from "@/src/api/posts";
+import { sendContact } from "@/src/api/posts";
+import { type ContactPayload } from "@/src/app/_types/Contact";
 
 type ContactFormValues = {
   name: string;
